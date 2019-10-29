@@ -21,7 +21,7 @@
 
 require File.expand_path('../../test_helper', __FILE__)
 
-class AgileVersionsControllerTest < ActionController::TestCase
+class AgileDataTest < ActiveSupport::TestCase
   fixtures :projects,
            :users,
            :roles,
@@ -46,38 +46,22 @@ class AgileVersionsControllerTest < ActionController::TestCase
            :journal_details,
            :queries
 
-  def setup
-
-    @project_1 = Project.find(1)
-    @project_3 = Project.find(5)
-
-    EnabledModule.create(:project => @project_1, :name => 'agile')
-    EnabledModule.create(:project => @project_3, :name => 'agile')
-
-    @request.session[:user_id] = 1
+  # Replace this with your real tests.
+  def test_save_color
+    issue = Issue.find(1)
+    issue.agile_data.position = 1
+    assert issue.save
+    issue.reload
+    assert_equal 1, issue.agile_data.position
   end
 
-  def test_get_index
-    get :index, :project_id => @project_1
-    assert_response :success
-    assert_template :index
+  def test_delete_color
+    issue = Issue.find(1)
+    issue.agile_data.position = 1
+    assert issue.save
+    issue.reload
+    agile_data = issue.agile_data
+    assert issue.destroy
+    assert !AgileData.exists?(agile_data.id)
   end
-
-  def test_get_load
-    xhr :get, :load, :version_type => "backlog", :version_id => "3", :project_id => "ecookbook"
-    assert_response :success
-  end
-
-  def test_get_autocomplete_id
-    xhr :get, :autocomplete, :project_id => "ecookbook", :q =>"#3"
-    assert_response :success
-    assert_match "Error 281",  @response.body
-  end
-
-  def test_get_autocomplete_text
-    xhr :get, :autocomplete, :project_id => "ecookbook", :q =>"error"
-    assert_response :success
-    assert_match "Error 281",  @response.body
-  end
-
 end
